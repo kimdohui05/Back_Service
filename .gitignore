@@ -46,3 +46,7 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.rar
+
+# Claude temporary files
+.claude/
+tmpclaude-*

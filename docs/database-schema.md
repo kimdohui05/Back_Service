@@ -1,26 +1,10 @@
-# BankService Database Schema
+# Database Schema (AI Context)
 
-## 개요
-BankService 프로젝트의 MySQL 데이터베이스 스키마 문서입니다.
+DB: `bank_service`
 
-**Database Name**: `bank_service`
+## Tables
 
----
-
-## 1. User (회원 정보)
-
-사용자의 기본 정보를 저장하는 테이블
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| uid | VARCHAR(36) | PK, NN | 유저 고유번호 (UUID) |
-| id | VARCHAR(15) | NN | 회원가입, 로그인 ID |
-| password | VARCHAR(15) | NN | 회원가입, 로그인 Password |
-| name | VARCHAR(20) | NN | 사용자 이름 |
-| phone_number | VARCHAR(11) | NN | 전화번호 |
-| email | VARCHAR(45) | NN | 이메일 |
-
-### SQL
+### user
 ```sql
 CREATE TABLE user (
     uid VARCHAR(36) PRIMARY KEY NOT NULL,
@@ -31,22 +15,11 @@ CREATE TABLE user (
     email VARCHAR(45) NOT NULL
 );
 ```
+- uid: UUID (PK)
+- id: login ID
+- password: plain text (no encryption)
 
----
-
-## 2. Account (일반 계좌)
-
-일반 입출금 계좌 정보를 저장하는 테이블
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| aid | VARCHAR(36) | PK, NN | 계좌 고유번호 (UUID) |
-| uid | VARCHAR(36) | FK, NN | 유저 ID (외래키) |
-| acc_number | VARCHAR(12) | NN | 계좌번호 |
-| acc_password | VARCHAR(4) | NN | 계좌 비밀번호 |
-| balance | DECIMAL(20, 2) | NN | 현재 잔액 |
-
-### SQL
+### account
 ```sql
 CREATE TABLE account (
     aid VARCHAR(36) PRIMARY KEY NOT NULL,
@@ -57,26 +30,12 @@ CREATE TABLE account (
     FOREIGN KEY (uid) REFERENCES user(uid)
 );
 ```
+- aid: UUID (PK)
+- uid: FK to user
+- acc_number: 12-digit account number
+- balance: current balance
 
----
-
-## 3. Deposit (예금)
-
-정기예금 계좌 정보를 저장하는 테이블
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| did | VARCHAR(36) | PK, NN | 예금 고유번호 (UUID) |
-| uid | VARCHAR(36) | FK, NN | 유저 FK |
-| acc_number | VARCHAR(12) | NN | 계좌번호 |
-| acc_password | VARCHAR(4) | NN | 계좌 비밀번호 |
-| rate | DECIMAL(4, 2) | NN | 이자율 (예: 3.50%) |
-| start_date | DATE | NN | 시작일 |
-| maturity_date | DATE | NN | 만기일 |
-| status | ENUM | NN | 상태 (ACTIVE, MATURED, CLOSED) |
-| balance | DECIMAL(20, 2) | NN | 잔액 |
-
-### SQL
+### deposit
 ```sql
 CREATE TABLE deposit (
     did VARCHAR(36) PRIMARY KEY NOT NULL,
@@ -91,27 +50,10 @@ CREATE TABLE deposit (
     FOREIGN KEY (uid) REFERENCES user(uid)
 );
 ```
+- status: ACTIVE/MATURED/CLOSED
+- rate: interest rate (e.g., 3.50)
 
----
-
-## 4. Savings (적금)
-
-정기적금 계좌 정보를 저장하는 테이블
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| sid | VARCHAR(36) | PK, NN | 적금 고유번호 (UUID) |
-| uid | VARCHAR(36) | FK, NN | 유저 FK |
-| acc_number | VARCHAR(12) | NN | 계좌번호 |
-| acc_password | VARCHAR(4) | NN | 계좌 비밀번호 |
-| rate | DECIMAL(4, 2) | NN | 이자율 |
-| start_date | DATE | NN | 시작일 |
-| status | ENUM | NN | 상태 (ACTIVE, MATURED, CLOSED) |
-| balance | DECIMAL(20, 2) | NN | 현재 잔액 |
-| period | INT | NN | 기간 (개월) |
-| mthly_deposit | INT | NN | 월 납입액 |
-
-### SQL
+### savings
 ```sql
 CREATE TABLE savings (
     sid VARCHAR(36) PRIMARY KEY NOT NULL,
@@ -127,35 +69,14 @@ CREATE TABLE savings (
     FOREIGN KEY (uid) REFERENCES user(uid)
 );
 ```
+- period: months
+- mthly_deposit: monthly deposit amount
 
----
+## Relationships
+- User 1:N Account
+- User 1:N Deposit
+- User 1:N Savings
 
-## 테이블 관계도
-
-```
-User (1) ─────< (N) Account
-  │
-  ├────────────< (N) Deposit
-  │
-  └────────────< (N) Savings
-```
-
-- 한 명의 사용자(User)는 여러 개의 계좌(Account, Deposit, Savings)를 가질 수 있음
-- 모든 계좌 테이블은 `uid`를 통해 User 테이블과 연결됨
-
----
-
-## 계좌 유형별 특징
-
-| 구분 | Account | Deposit | Savings |
-|------|---------|---------|---------|
-| 유형 | 입출금 계좌 | 정기예금 | 정기적금 |
-| 입출금 | 자유 | 만기 시 | 만기 시 |
-| 납입 방식 | 자유 | 일시납 | 월 납입 |
-| 이자 | 없음/낮음 | 고정 이자율 | 고정 이자율 |
-| 만기일 | 없음 | 있음 | 계산됨 (start_date + period) |
-| 월 납입액 | - | - | 고정 |
-
----
-
-**작성일**: 2026-01-12
+## Implementation Status
+- user, account: **Implemented**
+- deposit, savings: **Not implemented**
