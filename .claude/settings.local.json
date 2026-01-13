@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradlew.bat build:*)",
+      "Bash(dir gradlew*)",
+      "Bash(cmd /c \"gradlew.bat build -x test\")",
+      "Bash(cmd /c \"gradlew.bat bootRun\")",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(curl:*)",
+      "Bash(.gradlew.bat clean build:*)",
+      "Bash(./gradlew.bat clean:*)",
+      "Bash(./gradlew.bat bootRun)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(del nul)"
+    ]
+  }
+}
