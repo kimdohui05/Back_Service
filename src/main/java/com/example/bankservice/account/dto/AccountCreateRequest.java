@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 계좌 개설 요청 DTO
- *
  * 역할: 새 계좌를 만들 때 필요한 정보를 담는 클래스
  * - 계좌번호는 자동 생성
  * - 초기 잔액은 0원 고정
