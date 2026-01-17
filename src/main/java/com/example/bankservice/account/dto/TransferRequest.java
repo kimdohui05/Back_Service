@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 /**
  * 송금 요청 DTO
  *
@@ -36,9 +34,9 @@ public class TransferRequest {
     private String accPassword;
 
     /**
-     * amount: 송금액
+     * amount: 송금액 (정수)
      * - 양수만 가능
      * - 내 계좌 잔액보다 클 수 없음
      */
-    private BigDecimal amount;
+    private Long amount;
 }

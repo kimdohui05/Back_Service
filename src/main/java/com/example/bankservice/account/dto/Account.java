@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 /**
  * Account DTO (Data Transfer Object)
  *
@@ -52,10 +50,10 @@ public class Account {
     private String accPassword;
 
     /**
-     * balance: 현재 잔액
+     * balance: 현재 잔액 (정수)
      * - 초기 잔액: 0원
      * - 입금/출금/송금으로 변동
-     * - DB 컬럼: balance (DECIMAL(20, 2), NN)
+     * - DB 컬럼: balance (BIGINT, NN)
      */
-    private BigDecimal balance;
+    private Long balance;
 }

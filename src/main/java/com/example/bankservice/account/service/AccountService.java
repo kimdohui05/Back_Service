@@ -5,7 +5,6 @@ import com.example.bankservice.account.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class AccountService {
                 .uid(request.getUid())
                 .accNumber(accNumber)
                 .accPassword(request.getAccPassword())
-                .balance(BigDecimal.ZERO) // 초기 잔액 0원
+                .balance(0L) // 초기 잔액 0원
                 .build();
 
         // 데이터베이스에 저장
@@ -87,12 +86,12 @@ public class AccountService {
         }
 
         // 입금액 검증
-        if (request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getAmount() <= 0) {
             return "입금액은 0원보다 커야 합니다";
         }
 
         // 새 잔액 계산 (기존 잔액 + 입금액)
-        BigDecimal newBalance = account.getBalance().add(request.getAmount());
+        Long newBalance = account.getBalance() + request.getAmount();
 
         // 잔액 업데이트
         accountRepository.updateBalance(request.getAccNumber(), newBalance);
@@ -119,17 +118,17 @@ public class AccountService {
         }
 
         // 출금액 검증
-        if (request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getAmount() <= 0) {
             return "출금액은 0원보다 커야 합니다";
         }
 
         // 잔액 확인
-        if (account.getBalance().compareTo(request.getAmount()) < 0) {
+        if (account.getBalance() < request.getAmount()) {
             return "잔액이 부족합니다";
         }
 
         // 새 잔액 계산 (기존 잔액 - 출금액)
-        BigDecimal newBalance = account.getBalance().subtract(request.getAmount());
+        Long newBalance = account.getBalance() - request.getAmount();
 
         // 잔액 업데이트
         accountRepository.updateBalance(request.getAccNumber(), newBalance);
@@ -164,21 +163,21 @@ public class AccountService {
         }
 
         // 송금액 검증
-        if (request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getAmount() <= 0) {
             return "송금액은 0원보다 커야 합니다";
         }
 
         // 잔액 확인
-        if (fromAccount.getBalance().compareTo(request.getAmount()) < 0) {
+        if (fromAccount.getBalance() < request.getAmount()) {
             return "잔액이 부족합니다";
         }
 
         // 출금 계좌 잔액 감소
-        BigDecimal newFromBalance = fromAccount.getBalance().subtract(request.getAmount());
+        Long newFromBalance = fromAccount.getBalance() - request.getAmount();
         accountRepository.updateBalance(request.getFromAccNumber(), newFromBalance);
 
         // 입금 계좌 잔액 증가
-        BigDecimal newToBalance = toAccount.getBalance().add(request.getAmount());
+        Long newToBalance = toAccount.getBalance() + request.getAmount();
         accountRepository.updateBalance(request.getToAccNumber(), newToBalance);
 
         return "송금 성공";

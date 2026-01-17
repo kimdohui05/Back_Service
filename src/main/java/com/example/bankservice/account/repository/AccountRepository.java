@@ -4,7 +4,6 @@ import com.example.bankservice.account.dto.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -62,7 +61,7 @@ public class AccountRepository {
                             .uid(rs.getString("uid"))
                             .accNumber(rs.getString("acc_number"))
                             .accPassword(rs.getString("acc_password"))
-                            .balance(rs.getBigDecimal("balance"))
+                            .balance(rs.getLong("balance"))
                             .build(),
                     accNumber
             );
@@ -87,7 +86,7 @@ public class AccountRepository {
                         .uid(rs.getString("uid"))
                         .accNumber(rs.getString("acc_number"))
                         .accPassword(rs.getString("acc_password"))
-                        .balance(rs.getBigDecimal("balance"))
+                        .balance(rs.getLong("balance"))
                         .build(),
                 uid
         );
@@ -99,7 +98,7 @@ public class AccountRepository {
      * @param accNumber - 계좌번호
      * @param newBalance - 새로운 잔액
      */
-    public void updateBalance(String accNumber, BigDecimal newBalance) {
+    public void updateBalance(String accNumber, Long newBalance) {
         String sql = "UPDATE account SET balance = ? WHERE acc_number = ?";
         jdbcTemplate.update(sql, newBalance, accNumber);
     }

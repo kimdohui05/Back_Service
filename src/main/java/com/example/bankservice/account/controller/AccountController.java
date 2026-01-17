@@ -39,11 +39,12 @@ public class AccountController {
      * GET /api/accounts/{accNumber}
      *
      * @param accNumber - 계좌번호
-     * @return 계좌 정보 (잔액 포함)
+     * @return 잔액 메시지
      */
     @GetMapping("/{accNumber}")
-    public Account getAccountInfo(@PathVariable String accNumber) {
-        return accountService.getAccountInfo(accNumber);
+    public String getAccountInfo(@PathVariable String accNumber) {
+        Account account = accountService.getAccountInfo(accNumber);
+        return "잔액 : " + account.getBalance();
     }
 
     /**
@@ -51,11 +52,16 @@ public class AccountController {
      * GET /api/accounts/my/{uid}
      *
      * @param uid - 유저 고유번호
-     * @return 계좌 목록
+     * @return 계좌번호 목록 메시지
      */
     @GetMapping("/my/{uid}")
-    public List<Account> getMyAccounts(@PathVariable String uid) {
-        return accountService.getMyAccounts(uid);
+    public String getMyAccounts(@PathVariable String uid) {
+        List<Account> accounts = accountService.getMyAccounts(uid);
+        String accountNumbers = accounts.stream()
+                .map(Account::getAccNumber)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("없음");
+        return "보유한 계좌번호 : " + accountNumbers;
     }
 
     /**
