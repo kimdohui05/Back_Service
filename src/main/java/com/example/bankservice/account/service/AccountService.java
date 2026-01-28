@@ -26,9 +26,9 @@ public class AccountService {
      * 계좌 개설
      *
      * @param request - 계좌 개설 요청 (uid, accPassword)
-     * @return 개설된 계좌 정보
+     * @return 성공 메시지와 보유 계좌번호 목록
      */
-    public Account createAccount(AccountCreateRequest request) {
+    public String createAccount(AccountCreateRequest request) {
         // 12자리 계좌번호 생성
         String accNumber = accountRepository.generateAccountNumber();
 
@@ -43,7 +43,16 @@ public class AccountService {
         // 데이터베이스에 저장
         accountRepository.save(account);
 
-        return account;
+        // 해당 유저의 모든 계좌 조회
+        List<Account> accounts = accountRepository.findByUid(request.getUid());
+
+        // 계좌번호들을 문자열로 변환
+        String accountNumbers = accounts.stream()
+                .map(Account::getAccNumber)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("없음");
+
+        return "계좌 개설에 성공 했습니다\n현재 보유하고 있는 계좌번호 : " + accountNumbers;
     }
 
     /**

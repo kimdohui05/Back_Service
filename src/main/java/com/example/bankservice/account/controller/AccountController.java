@@ -27,10 +27,10 @@ public class AccountController {
      * POST /api/accounts/create
      *
      * @param request - 계좌 개설 요청 (uid, accPassword)
-     * @return 개설된 계좌 정보
+     * @return 성공 메시지와 보유 계좌번호 목록
      */
     @PostMapping("/create")
-    public Account createAccount(@RequestBody AccountCreateRequest request) {
+    public String createAccount(@RequestBody AccountCreateRequest request) {
         return accountService.createAccount(request);
     }
 
