@@ -27,31 +27,15 @@ CREATE TABLE account (
     acc_number VARCHAR(12) NOT NULL,
     acc_password VARCHAR(4) NOT NULL,
     balance DECIMAL(20, 2) NOT NULL,
+    last_interest_update DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (uid) REFERENCES user(uid)
 );
 ```
 - aid: UUID (PK)
 - uid: FK to user
 - acc_number: 12-digit account number
-- balance: current balance
-
-### deposit
-```sql
-CREATE TABLE deposit (
-    did VARCHAR(36) PRIMARY KEY NOT NULL,
-    uid VARCHAR(36) NOT NULL,
-    acc_number VARCHAR(12) NOT NULL,
-    acc_password VARCHAR(4) NOT NULL,
-    rate DECIMAL(4, 2) NOT NULL,
-    start_date DATE NOT NULL,
-    maturity_date DATE NOT NULL,
-    status ENUM('ACTIVE', 'MATURED', 'CLOSED') NOT NULL,
-    balance DECIMAL(20, 2) NOT NULL,
-    FOREIGN KEY (uid) REFERENCES user(uid)
-);
-```
-- status: ACTIVE/MATURED/CLOSED
-- rate: interest rate (e.g., 3.50)
+- balance: current balance (시간당 1% 자동 이자 적용)
+- last_interest_update: 마지막 이자 적용 시각 (스케줄러가 업데이트)
 
 ### savings
 ```sql
@@ -74,9 +58,15 @@ CREATE TABLE savings (
 
 ## Relationships
 - User 1:N Account
-- User 1:N Deposit
 - User 1:N Savings
 
 ## Implementation Status
-- user, account: **Implemented**
-- deposit, savings: **Not implemented**
+- user, account: **Implemented** (with automatic hourly 1% interest)
+- savings: **Not implemented**
+
+## Interest System
+- **Type**: Automatic hourly interest on all accounts
+- **Rate**: 1% per hour (compound interest)
+- **Method**: Spring @Scheduled runs every hour
+- **Formula**: newBalance = floor(balance × 1.01^hoursElapsed)
+- **Recovery**: Server downtime automatically recovered based on last_interest_update

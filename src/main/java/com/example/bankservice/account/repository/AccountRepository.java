@@ -4,6 +4,7 @@ import com.example.bankservice.account.dto.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -32,6 +33,7 @@ public class AccountRepository {
         // aid (계좌 고유번호) 자동 생성
         String aid = UUID.randomUUID().toString();
 
+        // last_interest_update는 DB의 DEFAULT CURRENT_TIMESTAMP로 자동 설정됨
         String sql = "INSERT INTO account (aid, uid, acc_number, acc_password, balance) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -51,7 +53,7 @@ public class AccountRepository {
      * @return 찾은 계좌 또는 null
      */
     public Account findByAccNumber(String accNumber) {
-        String sql = "SELECT aid, uid, acc_number, acc_password, balance " +
+        String sql = "SELECT aid, uid, acc_number, acc_password, balance, last_interest_update " +
                 "FROM account WHERE acc_number = ?";
 
         try {
@@ -62,6 +64,9 @@ public class AccountRepository {
                             .accNumber(rs.getString("acc_number"))
                             .accPassword(rs.getString("acc_password"))
                             .balance(rs.getLong("balance"))
+                            .lastInterestUpdate(rs.getTimestamp("last_interest_update") != null
+                                    ? rs.getTimestamp("last_interest_update").toLocalDateTime()
+                                    : null)
                             .build(),
                     accNumber
             );
@@ -77,7 +82,7 @@ public class AccountRepository {
      * @return 계좌 목록
      */
     public List<Account> findByUid(String uid) {
-        String sql = "SELECT aid, uid, acc_number, acc_password, balance " +
+        String sql = "SELECT aid, uid, acc_number, acc_password, balance, last_interest_update " +
                 "FROM account WHERE uid = ?";
 
         return jdbcTemplate.query(sql,
@@ -87,6 +92,9 @@ public class AccountRepository {
                         .accNumber(rs.getString("acc_number"))
                         .accPassword(rs.getString("acc_password"))
                         .balance(rs.getLong("balance"))
+                        .lastInterestUpdate(rs.getTimestamp("last_interest_update") != null
+                                ? rs.getTimestamp("last_interest_update").toLocalDateTime()
+                                : null)
                         .build(),
                 uid
         );
@@ -118,5 +126,46 @@ public class AccountRepository {
         }
 
         return accNumber.toString();
+    }
+
+    /**
+     * 모든 계좌 조회
+     *
+     * @return 전체 계좌 목록
+     *
+     * 용도: 이자 스케줄러에서 사용
+     * - 1시간마다 모든 계좌에 이자를 적용하기 위해 전체 계좌 조회 필요
+     */
+    public List<Account> findAll() {
+        String sql = "SELECT aid, uid, acc_number, acc_password, balance, last_interest_update " +
+                "FROM account";
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> Account.builder()
+                        .aid(rs.getString("aid"))
+                        .uid(rs.getString("uid"))
+                        .accNumber(rs.getString("acc_number"))
+                        .accPassword(rs.getString("acc_password"))
+                        .balance(rs.getLong("balance"))
+                        .lastInterestUpdate(rs.getTimestamp("last_interest_update") != null
+                                ? rs.getTimestamp("last_interest_update").toLocalDateTime()
+                                : null)
+                        .build()
+        );
+    }
+
+    /**
+     * 계좌 잔액과 마지막 이자 업데이트 시각 함께 업데이트
+     *
+     * @param accNumber - 계좌번호
+     * @param newBalance - 새로운 잔액
+     * @param updateTime - 업데이트 시각
+     *
+     * 용도: 이자 스케줄러에서 사용
+     * - 이자 적용 후 잔액과 적용 시각을 함께 업데이트
+     */
+    public void updateBalanceAndInterestTime(String accNumber, Long newBalance, LocalDateTime updateTime) {
+        String sql = "UPDATE account SET balance = ?, last_interest_update = ? WHERE acc_number = ?";
+        jdbcTemplate.update(sql, newBalance, updateTime, accNumber);
     }
 }
