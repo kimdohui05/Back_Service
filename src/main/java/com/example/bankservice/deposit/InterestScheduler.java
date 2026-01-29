@@ -1,4 +1,4 @@
-package com.example.bankservice.scheduler;
+package com.example.bankservice.deposit;
 
 import com.example.bankservice.account.dto.Account;
 import com.example.bankservice.account.repository.AccountRepository;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-/**
+/**1
  * InterestScheduler 클래스 (이자 스케줄러)
  *
  * 역할: 모든 계좌에 자동으로 이자를 적용하는 스케줄러
