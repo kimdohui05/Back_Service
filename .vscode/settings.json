@@ -1,0 +1,8 @@
+{
+  "files.exclude": {
+    ".claude": true,
+    "docs": true,
+    "sync-docs.js": true,
+    "README-DOCS-SYNC.md": true
+  }
+}

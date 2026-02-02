@@ -21,3 +21,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Claude Code and docs sync
+.claude
+docs
+sync-docs.js
+README-DOCS-SYNC.md

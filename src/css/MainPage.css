@@ -1,0 +1,13 @@
+/**
+ * MainPage.css
+ *
+ * 역할: 메인 페이지의 스타일링
+ * - 전체 화면 배경색 및 기본 레이아웃
+ */
+
+/* 메인 페이지 컨테이너 */
+.asd {
+    padding: 20px;
+    background-color: black;
+    min-height: 100vh;
+}

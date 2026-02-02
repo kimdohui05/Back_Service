@@ -1,0 +1,37 @@
+/**
+ * Header.css
+ *
+ * 역할: 헤더 컴포넌트의 스타일링
+ * - 화면 상단 고정 레이아웃
+ * - 로고 텍스트 스타일링
+ */
+
+/* 헤더 전체 영역 - 화면 상단에 고정 */
+.App-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px;
+  background-color: white;
+  border-bottom: 1px solid white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* 헤더 왼쪽 영역 - 로고 */
+.header-left {
+  display: flex;
+  margin-top: 10px;
+  margin-left: 20px;
+  gap: 10px;
+}
+
+/* 로고 텍스트 스타일 */
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
