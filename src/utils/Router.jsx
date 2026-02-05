@@ -50,8 +50,8 @@ const router = createBrowserRouter([
     element: (
       <>
         <GlobalStyle />
-        <Outlet />
         <Header />
+        <Outlet />
       </>
     ),
     children: [
