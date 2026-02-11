@@ -1,13 +1,21 @@
 /**
  * MainPage.css
  *
- * 역할: 메인 페이지의 스타일링
- * - 전체 화면 배경색 및 기본 레이아웃
+ * 역할: 메인 페이지 공통 스타일
+ * - 배경 및 컨테이너 레이아웃
+ * - 로그인 전/후 스타일은 별도 파일 참조
+ *   - BeforeLogin.css: 로그인 전 스타일
+ *   - AfterLogin.css: 로그인 후 스타일
  */
 
 /* 메인 페이지 컨테이너 */
-.asd {
-    padding: 20px;
-    background-color: black;
+.main-page {
     min-height: 100vh;
+    background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+    padding: 40px 20px;
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
 }

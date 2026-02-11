@@ -12,11 +12,12 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../css/Header.css";
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState("");
 
@@ -51,6 +52,11 @@ function Header() {
     setUserId("");
     navigate("/");
   };
+
+  // 로그인/회원가입 페이지에서는 헤더 숨기기
+  if (location.pathname === "/login" || location.pathname === "/signup") {
+    return null;
+  }
 
   return (
     <header className="App-header">
