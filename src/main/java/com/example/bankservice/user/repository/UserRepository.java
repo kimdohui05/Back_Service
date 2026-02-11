@@ -85,8 +85,8 @@ public class UserRepository {
         // User: 테이블 이름
         // (uid, id, password, ...): 컬럼 이름들
         // VALUES (?, ?, ?, ...): 실제 값들 (? 는 나중에 채워질 자리)
-        String sql = "INSERT INTO User (uid, id, password, name, phone_number, email) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO User (uid, id, password, name, nickname, phone_number, email) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         // 3단계: JdbcTemplate으로 SQL 실행
         // jdbcTemplate.update(): INSERT, UPDATE, DELETE 쿼리를 실행하는 메서드
@@ -95,16 +95,16 @@ public class UserRepository {
         //   ? 1번 → uid (자동 생성한 UUID)
         //   ? 2번 → user.getId() (사용자가 입력한 아이디)
         //   ? 3번 → user.getPassword() (사용자가 입력한 비밀번호)
-        //   ? 4번 → user.getName() (사용자 이름)
-        //   ? 5번 → user.getPhoneNumber() (전화번호)
-        //   ? 6번 → user.getEmail() (이메일)
+        //   ? 4번 → user.getName() (이름, 최대 4글자)
+        //   ? 5번 → user.getNickname() (닉네임, 최대 10글자)
+        //   ? 6번 → user.getPhoneNumber() (전화번호)
+        //   ? 7번 → user.getEmail() (이메일)
         jdbcTemplate.update(sql, uid, user.getId(), user.getPassword(),
-                user.getName(),
-                user.getPhoneNumber(), user.getEmail());
+                user.getName(), user.getNickname(), user.getPhoneNumber(), user.getEmail());
 
         // 실행되는 실제 쿼리 예:
-        // INSERT INTO User (uid, id, password, name, phone_number, email)
-        // VALUES ('550e8400-...', 'hong', '1234', '홍길동', '01012345678', 'hong@example.com')
+        // INSERT INTO User (uid, id, password, name, nickname, phone_number, email)
+        // VALUES ('550e8400-...', 'hong', '1234', '홍길동', '홍길동123', '01012345678', 'hong@example.com')
     }
 
     /**
@@ -127,7 +127,7 @@ public class UserRepository {
         // uid, id, ...: 가져올 컬럼들
         // FROM User: User 테이블에서
         // WHERE id = ?: id 컬럼이 ? 와 같은 행만 찾기
-        String sql = "SELECT uid, id, password, name, phone_number, email FROM User WHERE id = ?";
+        String sql = "SELECT uid, id, password, name, nickname, phone_number, email FROM User WHERE id = ?";
 
         // 2단계: try-catch로 예외 처리
         // 왜? 데이터가 없으면 queryForObject가 예외를 던지기 때문
@@ -150,6 +150,7 @@ public class UserRepository {
                             .id(rs.getString("id"))
                             .password(rs.getString("password"))
                             .name(rs.getString("name"))
+                            .nickname(rs.getString("nickname"))
                             // 주의: DB는 phone_number, Java는 phoneNumber
                             .phoneNumber(rs.getString("phone_number"))
                             .email(rs.getString("email"))
@@ -160,7 +161,7 @@ public class UserRepository {
             );
 
             // 실행되는 실제 쿼리 예:
-            // SELECT uid, id, password, name, phone_number, email
+            // SELECT uid, id, password, name, nickname, phone_number, email
             // FROM User
             // WHERE id = 'hong'
 

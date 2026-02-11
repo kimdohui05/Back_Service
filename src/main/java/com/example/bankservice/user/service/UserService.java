@@ -62,18 +62,44 @@ public class UserService {
      *
      * 동작 흐름:
      * 1. Controller가 User 객체를 넘겨줌
-     * 2. Repository에게 User를 저장하라고 요청
-     * 3. Repository가 데이터베이스에 INSERT 쿼리 실행
+     * 2. 아이디, 비밀번호, 이름, 닉네임 검증
+     * 3. Repository에게 User를 저장하라고 요청
+     * 4. Repository가 데이터베이스에 INSERT 쿼리 실행
      *
-     * 현재는 단순하지만, 나중에 추가할 수 있는 것들:
-     * - 아이디 중복 체크
-     * - 비밀번호 암호화
-     * - 이메일 유효성 검증
-     * - 환영 이메일 발송 등
+     * 검증 규칙:
+     * - 비밀번호: 아이디와 동일하면 안 됨
+     * - 이름: 최대 4글자, 한글/영문/숫자만 허용 (특수문자 불가)
+     * - 닉네임: 최대 10글자, 한글/영문/숫자만 허용 (특수문자 불가)
      *
      * @param user - 회원가입할 사용자 정보
+     * @throws IllegalArgumentException - 검증 실패 시 예외 발생
      */
     public void registerUser(User user) {
+        // 비밀번호와 아이디 동일 여부 검증
+        if (user.getPassword() != null && user.getPassword().equals(user.getId())) {
+            throw new IllegalArgumentException("비밀번호는 아이디와 같을 수 없습니다");
+        }
+
+        // 이름 길이 검증 (최대 4글자)
+        if (user.getName() != null && user.getName().length() > 4) {
+            throw new IllegalArgumentException("이름은 최대 4글자까지 입력 가능합니다");
+        }
+
+        // 이름 특수문자 검증 (한글, 영문, 숫자만 허용)
+        if (user.getName() != null && !user.getName().matches("^[가-힣a-zA-Z0-9]+$")) {
+            throw new IllegalArgumentException("이름은 한글, 영문, 숫자만 입력 가능합니다 (특수문자 불가)");
+        }
+
+        // 닉네임 길이 검증 (최대 10글자)
+        if (user.getNickname() != null && user.getNickname().length() > 10) {
+            throw new IllegalArgumentException("닉네임은 최대 10글자까지 입력 가능합니다");
+        }
+
+        // 닉네임 특수문자 검증 (한글, 영문, 숫자만 허용)
+        if (user.getNickname() != null && !user.getNickname().matches("^[가-힣a-zA-Z0-9]+$")) {
+            throw new IllegalArgumentException("닉네임은 한글, 영문, 숫자만 입력 가능합니다 (특수문자 불가)");
+        }
+
         // Repository에게 사용자 정보를 데이터베이스에 저장하라고 요청
         userRepository.save(user);
 

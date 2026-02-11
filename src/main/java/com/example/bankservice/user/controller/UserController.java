@@ -74,7 +74,7 @@ public class UserController {
      *
      * @RequestBody: HTTP 요청의 body(본문)를 Java 객체로 변환
      * - 클라이언트가 보낸 JSON → User 객체로 자동 변환
-     * - 예: {"id":"hong", "password":"1234", "name":"홍길동", ...}
+     * - 예: {"id":"hong", "password":"1234", "name":"홍길동", "nickname":"홍길동123", "phoneNumber":"01012345678", "email":"hong@example.com"}
      *       → User 객체 생성
      *
      * 동작 흐름:
@@ -84,15 +84,20 @@ public class UserController {
      * 4. "회원가입 성공" 문자열을 클라이언트에게 응답
      *
      * @param user - 회원가입할 사용자 정보
-     * @return 성공 메시지
+     * @return 성공 메시지 또는 에러 메시지
      */
     @PostMapping("/register")
     public String register(@RequestBody User user) {
-        // Service에게 회원가입 처리를 요청
-        userService.registerUser(user);
+        try {
+            // Service에게 회원가입 처리를 요청
+            userService.registerUser(user);
 
-        // 성공 메시지를 클라이언트에게 반환
-        return "회원가입 성공";
+            // 성공 메시지를 클라이언트에게 반환
+            return "회원가입 성공";
+        } catch (IllegalArgumentException e) {
+            // 이름/닉네임 길이 초과 등의 검증 오류 발생 시
+            return e.getMessage();
+        }
     }
 
     /**

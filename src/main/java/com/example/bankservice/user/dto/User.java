@@ -77,9 +77,20 @@ public class User {
     /**
      * name: 사용자의 이름
      * - 예: "홍길동", "김철수"
-     * - DB 컬럼: name (VARCHAR(20), NN)
+     * - 회원가입 시 사용자가 입력
+     * - 최대 길이: 4글자
+     * - DB 컬럼: name (VARCHAR(4), NN)
      */
     private String name;
+
+    /**
+     * nickname: 사용자의 닉네임
+     * - 예: "홍길동123", "멋진사람"
+     * - 회원가입 시 사용자가 입력
+     * - 최대 길이: 10글자
+     * - DB 컬럼: nickname (VARCHAR(10), NN)
+     */
+    private String nickname;
 
     /**
      * phoneNumber: 전화번호

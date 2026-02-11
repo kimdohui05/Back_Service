@@ -112,20 +112,41 @@ public class AccountRepository {
     }
 
     /**
-     * 12자리 랜덤 계좌번호 생성
+     * 12자리 랜덤 계좌번호 생성 (일반 계좌용)
+     * - 맨 앞자리는 0으로 시작
+     * - 나머지 11자리는 랜덤 숫자
+     * - 중복 방지: 이미 존재하는 계좌번호면 다시 생성
      *
-     * @return 12자리 계좌번호
+     * @return 12자리 계좌번호 (0으로 시작)
      */
     public String generateAccountNumber() {
         Random random = new Random();
-        StringBuilder accNumber = new StringBuilder();
+        String accNumber;
+        int maxAttempts = 100; // 최대 시도 횟수
+        int attempts = 0;
 
-        // 12자리 숫자 생성
-        for (int i = 0; i < 12; i++) {
-            accNumber.append(random.nextInt(10)); // 0~9 랜덤 숫자
-        }
+        do {
+            StringBuilder sb = new StringBuilder();
 
-        return accNumber.toString();
+            // 첫 번째 자리는 0으로 고정
+            sb.append("0");
+
+            // 나머지 11자리 숫자 생성
+            for (int i = 0; i < 11; i++) {
+                sb.append(random.nextInt(10)); // 0~9 랜덤 숫자
+            }
+
+            accNumber = sb.toString();
+            attempts++;
+
+            // 무한 루프 방지
+            if (attempts >= maxAttempts) {
+                throw new RuntimeException("계좌번호 생성 실패: 최대 시도 횟수 초과");
+            }
+
+        } while (findByAccNumber(accNumber) != null); // 중복이면 다시 생성
+
+        return accNumber;
     }
 
     /**
